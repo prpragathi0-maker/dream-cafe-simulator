@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#20140f">
+<title>Dream Café Simulator</title>
+<style>
+:root{
+  --bg:#17110e;--panel:#261b16;--gold:#edbd75;
+  --cream:#fff1dc;--muted:#bca99a;--green:#91bd91;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:radial-gradient(ellipse at top,#493025 0,#211712 45%,#120e0c 100%);
+ color:var(--cream);font-family:system-ui,-apple-system,sans-serif;
+ min-height:100vh
+}
+button{font:inherit;cursor:pointer;transition:.18s}
+button:active{transform:scale(.97)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.app{max-width:1050px;margin:auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{font-size:35px;filter:drop-shadow(0 4px 8px #0008)}
+h1{font-size:clamp(20px,4vw,30px);margin:0;letter-spacing:-1px}
+.subtitle{font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.wallet{background:#30221a;border:1px solid #705039;border-radius:15px;padding:10px 13px;text-align:right;min-width:100px}
+.wallet small{display:block;color:var(--muted);font-size:11px}
+.wallet strong{color:var(--gold);font-size:19px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}
+.stat,.panel{background:linear-gradient(145deg,#32231b,#211713);border:1px solid #533b2c;border-radius:17px}
+.stat{padding:11px 13px}.stat small{color:var(--muted);font-size:11px}
+.stat strong{display:block;font-size:19px;margin-top:3px}
+.scene{
+ position:relative;overflow:hidden;min-height:240px;border-radius:22px;
+ border:1px solid #795239;
+ background:linear-gradient(#51372a 0%,#75513a 54%,#a2774f 54%,#66452f 100%);
+ box-shadow:inset 0 0 55px #140b0880,0 12px 35px #0005
+}
+.scene:before{content:"";position:absolute;inset:0 0 46% 0;
+ background:repeating-linear-gradient(90deg,transparent 0 95px,#24150d25 96px 100px),
+ linear-gradient(90deg,#21130c99,#e0a76522,#21130c99)}
+.lights{position:absolute;top:0;left:8%;right:8%;height:9px;background:#e7b66e;box-shadow:0 0 22px #ffc875}
+.sign{position:absolute;top:17px;left:50%;transform:translateX(-50%);
+ background:#21150f;border:2px solid #b98750;padding:8px 16px;border-radius:6px;
+ color:#ffd59b;font-family:Georgia,serif;white-space:nowrap;box-shadow:0 5px 14px #0006}
+.shelf{position:absolute;top:83px;left:5%;right:5%;height:8px;background:#281811;box-shadow:0 3px 5px #0005}
+.jar{position:absolute;top:52px;font-size:25px;filter:drop-shadow(0 3px 3px #0005)}
+.jar.j1{left:12%}.jar.j2{left:24%}.jar.j3{right:22%}.jar.j4{right:10%}
+.window{position:absolute;top:58px;left:39%;width:22%;height:61px;
+ background:linear-gradient(135deg,#d9b78b,#8b9b88);border:5px solid #38251a;
+ box-shadow:inset 0 0 15px #fff5}
+.window:after{content:"";position:absolute;left:48%;top:0;bottom:0;width:4px;background:#38251a}
+.counter{position:absolute;bottom:0;left:0;right:0;height:37%;background:linear-gradient(#986743,#684329 28%,#42271b 29%,#281811 100%);border-top:6px solid #d09a60}
+.machine{position:absolute;z-index:2;bottom:36%;left:7%;font-size:clamp(47px,10vw,82px);filter:drop-shadow(0 8px 4px #0005)}
+.grinder{position:absolute;z-index:2;bottom:36%;left:27%;font-size:clamp(33px,7vw,54px)}
+.cupscene{position:absolute;z-index:2;bottom:35%;right:14%;font-size:clamp(43px,8vw,65px);filter:drop-shadow(0 5px 4px #0006)}
+.plant{position:absolute;z-index:2;bottom:34%;right:4%;font-size:38px}
+.scene-caption{position:absolute;bottom:12px;right:12px;color:#ffe7c6;font-size:10px;letter-spacing:2px;text-shadow:0 2px 3px #000}
+.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px;margin-top:14px}
+.panel{padding:16px;min-width:0}
+.panel h2{font-size:17px;margin:0 0 5px}
+.desc{font-size:12px;color:var(--muted);margin:0 0 14px}
+.customer{
+ background:linear-gradient(135deg,#493025,#302019);border:1px solid #654733;
+ border-radius:14px;padding:13px;display:flex;align-items:center;gap:12px;margin-bottom:12px
+}
+.avatar{width:63px;height:63px;flex-shrink:0;border-radius:17px;background:#d9b18b;
+ display:grid;place-items:center;font-size:39px;box-shadow:inset 0 -8px 0 #8a6046}
+.customer-info{flex:1;min-width:0}.customer-info strong{display:block;font-size:15px}
+.order{font-size:13px;color:#ffdb9f;margin-top:3px}
+.patience{height:6px;background:#4a3930;border-radius:20px;overflow:hidden;margin-top:8px}
+#patienceBar{height:100%;width:100%;background:var(--green);transition:width .4s}
+.label{display:block;font-size:11px;color:var(--muted);margin:14px 0 8px}
+.drinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.drink{border:1px solid #594131;background:#34241b;color:var(--cream);border-radius:12px;padding:11px 7px;text-align:left}
+.drink.selected{border-color:var(--gold);background:#58402a;box-shadow:0 0 0 1px #edbd7550}
+.drink .emoji{font-size:25px;display:block;margin-bottom:4px}
+.drink strong{font-size:12px;display:block}.drink small{color:var(--muted);font-size:10px}
+.primary,.secondary,.upgrade{
+ width:100%;border-radius:12px;padding:12px;border:0;font-weight:750;margin-top:10px
+}
+.primary{background:linear-gradient(135deg,#f0cb8a,#c58a4e);color:#29180e;box-shadow:0 4px 0 #89572e}
+.secondary{background:#3c2a20;color:var(--cream);border:1px solid #654733}
+.message{font-size:12px;line-height:1.5;min-height:38px;padding:10px 11px;border-radius:10px;background:#18110e;color:#d7c1a7;margin-top:12px}
+.message.good{color:#a9e2ac}.message.bad{color:#ffb2a1}
+.progress{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin:12px 0 5px}
+.track{height:8px;border-radius:10px;background:#49372a;overflow:hidden}
+.track div{height:100%;width:0;background:linear-gradient(90deg,#d59a53,#ffdc9c);transition:width .3s}
+.upgrade{display:flex;align-items:center;gap:10px;text-align:left;background:#33231a;color:var(--cream);border:1px solid #654733}
+.upgrade .uicon{font-size:25px}.upgrade .utext{flex:1}
+.upgrade strong{display:block;font-size:12px}.upgrade small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.price{color:var(--gold);font-size:12px;font-weight:bold;white-space:nowrap}
+footer{text-align:center;color:#8e7765;font-size:11px;padding:20px 0 10px}
+@media(max-width:650px){
+ .app{padding:12px}.grid{grid-template-columns:1fr;gap:12px}
+ .scene{min-height:225px}.panel{padding:14px}
+ .stat strong{font-size:17px}.wallet{padding:8px 10px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand">
+  <div class="logo">☕</div>
+  <div><h1>Dream Café</h1><div class="subtitle">Your little coffee empire</div></div>
+ </div>
+ <div class="wallet"><small>YOUR COINS</small><strong>🪙 <span id="coins">100</span></strong></div>
+</header>
+
+<div class="stats">
+ <div class="stat"><small>☕ DRINKS SERVED</small><strong id="served">0</strong></div>
+ <div class="stat"><small>⭐ CAFÉ RATING</small><strong id="rating">5.0</strong></div>
+ <div class="stat"><small>📅 DAY</small><strong id="day">1</strong></div>
+</div>
+
+<section class="scene" aria-label="Café interior">
+ <div class="lights"></div><div class="sign">✦ Dream Café ✦</div>
+ <div class="shelf"></div>
+ <div class="jar j1">🫙</div><div class="jar j2">🪴</div>
+ <div class="jar j3">🫙</div><div class="jar j4">🪴</div>
+ <div class="window"></div>
+ <div class="machine">☕</div><div class="grinder">⚙️</div>
+ <div class="cupscene" id="sceneCup">🥛</div><div class="plant">🌿</div>
+ <div class="counter"></div>
+ <div class="scene-caption">FRESHLY BREWED • MADE WITH LOVE</div>
+</section>
+
+<div class="grid">
+ <section class="panel">
+  <h2>🧑‍🍳 Customer Counter</h2>
+  <p class="desc">Take the order. Make the right drink. Earn your tip!</p>
+  <div class="customer">
+   <div class="avatar" id="avatar">👩🏻</div>
+   <div class="customer-info">
+    <strong id="customerName">Emma is waiting</strong>
+    <div class="order" id="orderText">Wants a Latte ☕</div>
+    <div class="patience"><div id="patienceBar"></div></div>
+   </div>
+  </div>
+  <span class="label">CHOOSE A DRINK TO PREPARE</span>
+  <div class="drinks" id="drinks">
+   <button class="drink selected" data-drink="Latte"><span class="emoji">☕</span><strong>Latte</strong><small>Milk + espresso</small></button>
+   <button class="drink" data-drink="Espresso"><span class="emoji">🫘</span><strong>Espresso</strong><small>Strong & bold</small></button>
+   <button class="drink" data-drink="Cappuccino"><span class="emoji">🥛</span><strong>Cappuccino</strong><small>Foamy perfection</small></button>
+   <button class="drink" data-drink="Iced Coffee"><span class="emoji">🧋</span><strong>Iced Coffee</strong><small>Chilled & sweet</small></button>
+  </div>
+  <button class="primary" id="makeBtn">🔥 Prepare Drink</button>
+  <button class="secondary" id="serveBtn" disabled>🍽️ Serve Customer</button>
+  <div class="message" id="message" aria-live="polite">Welcome! Let's make your first perfect coffee.</div>
+ </section>
+
+ <section class="panel">
+  <h2>🏆 Café Progress</h2>
+  <p class="desc">Serve customers and grow your coffee business.</p>
+  <div class="progress"><span>Daily goal</span><strong id="goalText">0 / 5 drinks</strong></div>
+  <div class="track"><div id="goalBar"></div></div>
+  <div class="progress"><span>Experience</span><strong id="xpText">0 XP</strong></div>
+  <div class="track"><div id="xpBar"></div></div>
+  <span class="label">UPGRADE YOUR CAFÉ</span>
+  <button class="upgrade" id="machineUpgrade">
+   <span class="uicon">⚙️</span><span class="utext"><strong>Pro Coffee Machine</strong><small id="machineDesc">Earn +5 bonus coins per drink</small></span><span class="price" id="machinePrice">🪙 80</span>
+  </button>
+  <button class="upgrade" id="interiorUpgrade">
+   <span class="uicon">🪴</span><span class="utext"><strong>Cozy Interior</strong><small id="interiorDesc">Increase your café rating</small></span><span class="price" id="interiorPrice">🪙 60</span>
+  </button>
+  <button class="upgrade" id="marketingUpgrade">
+   <span class="uicon">📣</span><span class="utext"><strong>Local Marketing</strong><small id="marketingDesc">Get a bigger customer tip</small></span><span class="price" id="marketingPrice">🪙 100</span>
+  </button>
+  <button class="secondary" id="newDayBtn">🌅 Start Next Day</button>
+</section>
+</div>
+<footer> DREAM CAFÉ SIMULATOR · Brew dreams, one cup at a time ☕</footer>
+</div>
+
+<script>
+(() => {
+ const $ = id => document.getElementById(id);
+ const menu = {
+  "Latte":{pay:20,emoji:"☕"},
+  "Espresso":{pay:16,emoji:"🫘"},
+  "Cappuccino":{pay:24,emoji:"🥛"},
+  "Iced Coffee":{pay:22,emoji:"🧋"}
+ };
+ const names=["Emma","Oliver","Mia","Noah","Ava","Leo","Sofia","Arjun","Ivy","Liam"];
+ const avatars=["👩🏻","👨🏽","👩🏾","🧑🏻","👨🏻","👩🏼","👩🏽","🧔🏻"];
+ let coins=100,served=0,day=1,xp=0,rating=5;
+ let machine=0,interior=0,marketing=0;
+ let customer=null,selected="Latte",prepared=null,locked=false;
+ let patience=100,patienceTimer=null,customerIndex=0;
+ const goal=5;
+
+ function say(text,type=""){
+  $("message").textContent=text;
+  $("message").className="message "+type;
+ }
+ function update(){
+  $("coins").textContent=coins;
+  $("served").textContent=served;
+  $("day").textContent=day;
+  $("rating").textContent=rating.toFixed(1);
+  $("goalText").textContent=(served%goal)+" / "+goal+" drinks";
+  $("goalBar").style.width=((served%goal)/goal*100)+"%";
+  $("xpText").textContent=xp+" XP";
+  $("xpBar").style.width=(xp%100)+"%";
+  $("machinePrice").textContent=machine>=3?"MAX LEVEL":"🪙 "+(80+machine*70);
+  $("interiorPrice").textContent=interior>=3?"MAX LEVEL":"🪙 "+(60+interior*65);
+  $("marketingPrice").textContent=marketing>=3?"MAX LEVEL":"🪙 "+(100+marketing*80);
+  $("machineDesc").textContent=machine>=3?"Machine fully upgraded":"Level "+machine+" · +"+(machine*5)+" bonus coins per drink";
+  $("interiorDesc").textContent=interior>=3?"Interior fully upgraded":"Level "+interior+" · Better café rating";
+  $("marketingDesc").textContent=marketing>=3?"Marketing fully upgraded":"Level "+marketing+" · Bigger tips";
+  $("makeBtn").disabled=locked||!!prepared;
+  $("serveBtn").disabled=locked||!prepared;
+ }
+ function stopPatience(){if(patienceTimer){clearInterval(patienceTimer);patienceTimer=null;}}
+ function newCustomer(){
+  stopPatience();
+  locked=false;prepared=null;patience=100;
+  customer={name:names[Math.floor(Math.random()*names.length)],
+    avatar:avatars[Math.floor(Math.random()*avatars.length)],
+    drink:Object.keys(menu)[Math.floor(Math.random()*4)]};
+  selected="Latte";
+  $("avatar").textContent=customer.avatar;
+  $("customerName").textContent=customer.name+" is waiting";
+  $("orderText").textContent="Wants a "+customer.drink+" "+menu[customer.drink].emoji;
+  document.querySelectorAll(".drink").forEach(b=>b.classList.toggle("selected",b.dataset.drink===selected));
+  $("patienceBar").style.width="100%";
+  $("patienceBar").style.background="var(--green)";
+  $("sceneCup").textContent="🥛";
+  update();
+  patienceTimer=setInterval(()=>{
+   if(locked||prepared){stopPatience();return;}
+   patience=Math.max(0,patience-2);
+   $("patienceBar").style.width=patience+"%";
+   if(patience<=35)$("patienceBar").style.background="#e4a05c";
+   if(patience<=0){
+    stopPatience();locked=true;
+    rating=Math.max(1,rating-.1);
+    say(customer.name+" left. Try serving faster next time!","bad");
+    $("customerName").textContent="No customer";
+    $("orderText").textContent="Waiting for the next guest…";
+    setTimeout(()=>{if(locked)newCustomer()},1300);
+   }
+   update();
+  },1000);
+  say("New order! Prepare "+customer.drink+".");
+ }
+ document.querySelectorAll(".drink").forEach(b=>{
+  b.addEventListener("click",()=>{
+   if(locked||prepared)return;
+   selected=b.dataset.drink;
+   document.querySelectorAll(".drink").forEach(x=>x.classList.toggle("selected",x===b));
+   say("Selected "+selected+". Tap Prepare Drink when ready.");
+  });
+ });
+ $("makeBtn").addEventListener("click",()=>{
+  if(locked||prepared)return;
+  prepared=selected;
+  $("sceneCup").textContent=menu[selected].emoji;
+  $("makeBtn").disabled=true;
+  $("serveBtn").disabled=false;
+  say("Your "+selected+" is ready! Serve it to "+customer.name+".","good");
+  stopPatience();
+  update();
+ });
+ $("serveBtn").addEventListener("click",()=>{
+  if(locked||!prepared||!customer)return;
+  locked=true;
+  const correct=prepared===customer.drink;
+  if(correct){
+   let earned=menu[prepared].pay+machine*5+Math.floor(Math.random()*(marketing+2)*3);
+   if(patience>60)earned+=3;
+   coins+=earned;served++;xp+=10;
+   if(served%goal===0){coins+=25;xp+=15;say("Perfect! +"+earned+" coins and daily goal bonus +25! 🎉","good");}
+   else say("Perfect order! +"+earned+" coins. "+customer.name+" loves it! ✨","good");
+   if(served%5===0)day++;
+   if(served%3===0)rating=Math.min(5,rating+.1);
+  }else{
+   coins+=3;
+   rating=Math.max(1,rating-.2);
+   say("Oops! They ordered "+customer.drink+". You earned 3 coins for trying. Next order!","bad");
+  }
+  stopPatience();update();
+  $("customerName").textContent=correct?"Happy customer!":"Order completed";
+  $("orderText").textContent=correct?"Thank you! See you again ☕":"A new chance is coming…";
+  setTimeout(newCustomer,1500);
+ });
+ function upgrade(type){
+  if(locked&& !customer)return;
+  let level=({machine,interior,marketing})[type];
+  if(level>=3){say("This upgrade is already at max level!");return;}
+  let cost=({machine:80+machine*70,interior:60+interior*65,marketing:100+marketing*80})[type];
+  if(coins<cost){say("Not enough coins yet! Serve more customers to earn coins.","bad");return;}
+  coins-=cost;
+  if(type==="machine")machine++;
+  if(type==="interior"){interior++;rating=Math.min(5,rating+.2);}
+  if(type==="marketing")marketing++;
+  say("Upgrade successful! Your café is getting better. ✨","good");
+  update();
+ }
+ $("machineUpgrade").addEventListener("click",()=>upgrade("machine"));
+ $("interiorUpgrade").addEventListener("click",()=>upgrade("interior"));
+ $("marketingUpgrade").addEventListener("click",()=>upgrade("marketing"));
+ $("newDayBtn").addEventListener("click",()=>{
+  if(!locked&&customer&&!prepared){say("Serve or finish the current order first!");return;}
+  day++;coins+=20;
+  say("A new day begins! Daily opening bonus: 20 coins. 🌅","good");
+  newCustomer();update();
+ });
+ update();newCustomer();
+})();
+</script>
+</body>
+</html>
